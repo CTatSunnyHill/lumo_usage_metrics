@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="Gaming Session Dashboard", layout="wide")
+st.set_page_config(page_title="Interactive Technologies Usage Report", layout="wide")
 
 # --- DATA LOADING ---
 @st.cache_data
@@ -59,7 +59,7 @@ st.sidebar.markdown("---")
 st.sidebar.header("Filter Data")
 
 # --- MAIN DASHBOARD ---
-st.title("LUMOPlay Usage & Metrics Dashboard")
+st.title("Interactive Technologies Usage Report")
 
 # Determine which file to load
 file_to_load = None

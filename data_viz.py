@@ -16,12 +16,9 @@ def load_data(file):
     # Ensure Date format
     if 'date' in df.columns:
         df['date'] = pd.to_datetime(df['date'])
-        # Shift dates from 2024 to 2025
-        df['date'] = df['date'] + pd.DateOffset(years=1)
-        # Create a Month column for trending (e.g., "January")
-        df['month'] = df['date'].dt.strftime('%B')
-        # Keep month number for proper sorting
-        df['month_num'] = df['date'].dt.month
+        df['month'] = df['date'].dt.strftime('%B %Y')
+        # Sortable key for the label above (e.g. 202401 for January 2024)
+        df['month_num'] = df['date'].dt.year * 100 + df['date'].dt.month
     
     # Clean up device names
     if 'device' in df.columns:
@@ -72,16 +69,23 @@ if file_to_load:
     df = load_data(file_to_load)
 
     # Check for critical columns
-    required_cols = ['date', 'duration_minutes']
+    required_cols = ['date', 'game', 'duration_minutes', 'device', 'area']
     if not all(col in df.columns for col in required_cols):
         st.error(f"Uploaded file is missing one of these required columns: {required_cols}")
         st.stop()
 
     # --- SIDEBAR FILTERS ---
     # Date Range
-    min_date = df['date'].min()
-    max_date = df['date'].max()
-    start_date, end_date = st.sidebar.date_input("Select Date Range", [min_date, max_date])
+    min_date = df['date'].min().date()
+    max_date = df['date'].max().date()
+    date_range = st.sidebar.date_input("Select Date Range", [min_date, max_date])
+    if len(date_range) == 2:
+        start_date, end_date = date_range
+    elif len(date_range) == 1:
+        start_date = end_date = date_range[0]
+    else:
+        start_date = min_date
+        end_date = max_date
 
     # Category Filters
     selected_game = st.sidebar.multiselect("Select Game", options=df['game'].unique(), default=df['game'].unique())
